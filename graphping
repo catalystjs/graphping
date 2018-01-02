@@ -1,6 +1,6 @@
 #!/usr/bin/python
 #
-#   Copyright 2013 Martijn Grendelman <m@rtijn.net>
+#   Copyright 2017 Martijn Grendelman <m@rtijn.net>
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -34,15 +34,15 @@ import socket
 import datetime
 from pprint import pprint, pformat
 
-# number of ping packets to send
-packets = 30
+# Number of ping packets to send. This number is based on a quick (rapid) interval
+packets = 2000
 
-# Graphite
+# Graphite (localhost testing)
 g_host = 'localhost'
 g_port = 2003
 g_prefix = 'ping'
 
-# System
+# System binaries for toolchain calls
 fping = '/usr/sbin/fping'
 logfile = '/tmp/graphping.log'
 
@@ -96,7 +96,7 @@ class App:
         try:
             loghandler = logging.handlers.WatchedFileHandler(self.logfile)
         except IOError:
-            print "Could not open logfile (%s)" % self.logfile
+            print ("Could not open logfile (%s)" % self.logfile)
             return False
 
         loghandler.setFormatter(formatter)
@@ -129,7 +129,7 @@ class App:
             self.usage()
 
     def usage(self):
-        print "Usage: ping-graphite <target> [<target> ...]"
+        print ("Usage: ping-graphite <target> [<target> ...]")
         sys.exit(2)
 
     def main(self):
@@ -204,15 +204,24 @@ class App:
                     m_min = self.g_prefix + '.' + safe_target + '.minrtt'
                     m_avg = self.g_prefix + '.' + safe_target + '.avgrtt'
                     m_max = self.g_prefix + '.' + safe_target + '.maxrtt'
-
+                    print ("This is the target: %s" % safe_target)
+                    print ("This is the loss: %s" % m_loss)
+                    print ("This is the median: %s" % m_median)
+                    print ("This is the min: %s" % m_min)
+                    print ("This is the avg: %s" % m_avg)
+                    print ("This is the max: %s" % m_max)
+                    print ("This is the summary: %s" % summary)
+                    
                     try:
                         self.logger.info("Sending data for %s. ts=%d => %s" % (safe_target, ts,
                             datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H:%M:%S')))
+                        """
                         s.send("%s %d %d\n" % (m_loss, summary['loss'], ts))
                         s.send("%s %.2f %d\n" % (m_median, self.median(rtt[target]), ts))
                         s.send("%s %.2f %d\n" % (m_min, summary['min'], ts))
                         s.send("%s %.2f %d\n" % (m_avg, summary['avg'], ts))
                         s.send("%s %.2f %d\n" % (m_max, summary['max'], ts))
+                        """
                     except Exception:
                         self.logger.info("Could not send! Summary:")
                         self.logger.info(pformat(summary))
