@@ -34,8 +34,11 @@ import socket
 import datetime
 from pprint import pprint, pformat
 
+# Globals
 # Number of ping packets to send. This number is based on a quick (rapid) interval
 packets = 2000
+interval = 10
+t_interval = 20
 
 # Graphite (localhost testing)
 g_host = 'localhost'
@@ -135,7 +138,7 @@ class App:
     def main(self):
 
         if self.setup_logging():
-            cmd = [ fping, '-c', str(packets) ] + self.targets
+            cmd = [ fping, '-c', str(packets), '-i', str(interval), '-p', str(t_interval) ] + self.targets
 
             while not self.stop:
 
